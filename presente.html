@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz do Amor ❤️</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6e6;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      color: #cc0000;
+    }
+
+    .question {
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    button {
+      background: #cc0000;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #cc0000;
+    }
+
+    #btn-musica {
+      margin-bottom: 15px;
+    }
+
+    /* Corações flutuando */
+    .heart {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background-color: pink;
+      transform: rotate(45deg);
+      animation: floatUp 8s linear infinite;
+      opacity: 0.6;
+      z-index: -1;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: pink;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        bottom: -50px;
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        bottom: 100vh;
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz Para meu Amor ❤️</h1>
+
+  <button id="btn-musica">Pausar Música 🔈</button>
+  <audio id="musica" src="classicpower-moonlight-sonata.mp3" autoplay loop></audio>
+
+  <div id="quiz-container">
+    <div class="question" id="question"></div>
+    <div id="answers"></div>
+  </div>
+  <div class="result" id="result"></div>
+
+  <script>
+    const quizData = [
+      {
+        question: "O que mais gosto em você?",
+        options: ["Seu sorriso", "Seus olhos", "Sua inteligência", "Seu abraço", "Sua boca"],
+        answer: 1
+      },
+      {
+        question: "Qual comida gostamos de comer juntos?",
+        options: ["Pizza", "Macarrão", "Sorvete", "Cachorro quente", "Bobó de camarão"],
+        answer: 1
+      },
+      {
+        question: "Qual é nossa série favorita?",
+        options: ["The From", "Lovecraft Country", "The Witcher", "Perdidos no Espaço", "Peaky Blinders"],
+        answer: 1
+      },
+      {
+        question: "Como chamo você com carinho?",
+        options: ["Florzinha", "Neném", "Bonequinha", "Camponesa de nobre coração", "Gostosa"],
+        answer: 1
+      },
+      {
+        question: "Qual foi o nosso primeiro encontro?",
+        options: ["Cinema", "Parque", "Restaurante", "Carrinho de cachorro quente", "Shopping"],
+        answer: 3
+      },
+      {
+        question: "Qual música me faz lembrar de você?",
+        options: ["Mumuzinho", "Sleeping At Last ", "Moonlight Sonata", "BTS_MIC Drop", "ExaltaSamba"],
+        answer: 1
+      },
+      {
+        question: "Qual lugar sonhamos  em viajar juntos?",
+        options: ["Coreia", "Gramado", "Suiça", "Rio de Janeiro", "Irlanda"],
+        answer: 4
+      },
+      {
+        question: "Qual o nosso filme favorito quando queremos dar umas risadas?",
+        options: ["jurassic world", "Os pecadores", "", "godzilla e kong o novo império", "inatividade paranormal"],
+        answer: 3
+      },
+      {
+        question: "Qual é a coisa que mais gosto de fazer com você?",
+        options: ["Passear", "Cozinhar", "Assistir séries", "Conversar", "Sexo"],
+        answer: 1
+      },
+      {
+        question: "Qual o meu jeito favorito de demonstrar amor?",
+        options: ["Presentes", "Carinho", "Palavras", "Tempo juntos", "Surpresas"],
+        answer: 0
+      },
+      {
+        question: "Qual é a sua lembrança mais especial comigo?",
+        options: ["Primeiro beijo", "Viagem juntos", "Aniversário", "Jantar romântico", "Passeio no parque"],
+        answer: 3
+      },
+      {
+        question: "O que você acha que mais combina com a nossa relação?",
+        options: ["Amizade", "Paixão", "Companheirismo", "Boas risadas", "Jogatina"],
+        answer: 2
+      },
+      {
+        question: "Qual foi o momento mais engraçado que passamos juntos?",
+        options: ["Dancinhas", "cair na rua ", "parque de diversoes", "Cinema", "jogando bola"],
+        answer: 1
+      },
+      {
+        question: "Qual o presente que eu te dei e você mais gostou?",
+        options: ["Carta", "Livro", "Celular", "Flores", "Jantar especial"],
+        answer: 2
+      },
+      {
+        question: "Qual lugar você sonha que a gente conheça juntos?",
+        options: ["Paris", "Nova York", "Maldivas", "Roma", "Tóquio"],
+        answer: 4
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById('question');
+    const answersEl = document.getElementById('answers');
+    const resultEl = document.getElementById('result');
+    const musica = document.getElementById('musica');
+    const btnMusica = document.getElementById('btn-musica');
+
+    btnMusica.onclick = () => {
+      if (musica.paused) {
+        musica.play();
+        btnMusica.textContent = 'Pausar Música 🔈';
+      } else {
+        musica.pause();
+        btnMusica.textContent = 'Tocar Música 🔉';
+      }
+    };
+
+    function loadQuestion() {
+      const q = quizData[currentQuestion];
+      questionEl.textContent = q.question;
+      answersEl.innerHTML = '';
+
+      q.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.onclick = () => selectAnswer(index);
+        answersEl.appendChild(button);
+      });
+
+      resultEl.textContent = '';
+    }
+
+    function selectAnswer(index) {
+      if (index === quizData[currentQuestion].answer) {
+        score++;
+        resultEl.textContent = 'Resposta certa! 🎉';
+      } else {
+        resultEl.textContent = 'Resposta errada 😢';
+      }
+
+      currentQuestion++;
+
+      if (currentQuestion < quizData.length) {
+        setTimeout(() => {
+          loadQuestion();
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          showScore();
+        }, 1500);
+      }
+    }
+
+    function showScore() {
+      questionEl.textContent = `Você acertou ${score} de ${quizData.length} perguntas!`;
+      answersEl.innerHTML = '';
+
+      if (score >= 3) {
+        resultEl.innerHTML = `
+          🎉 UAU! Você acertou ${score} perguntas, meu amor!<br><br>
+          💖 Aqui está sua surpresa: uma lembrança do nosso dia mais especial!<br><br>
+          <img id="final-img" src="IMG_0302.JPG" alt="Nossa foto de casamento" style="width: 100%; border-radius: 10px; box-shadow: 0 0 10px #cc0000;"><br><br>
+          Te amo para sempre! 💌
+        `;
+      } else {
+        resultEl.textContent = 'Obrigado por jogar, meu amor! ❤️';
+      }
+    }
+
+    loadQuestion();
+
+    // Corações flutuando
+    function criarCoracao() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+
+      const lado = Math.random() < 0.5 ? 'left' : 'right';
+      heart.style[lado] = Math.random() * 900  + "px";
+      heart.style.bottom = "-20px";
+      heart.style.animationDuration = (6 + Math.random() * 4) + "s";
+
+      document.body.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 10000);
+    }
+
+    setInterval(criarCoracao, 800);
+  </script>
+</body>
+</html>
